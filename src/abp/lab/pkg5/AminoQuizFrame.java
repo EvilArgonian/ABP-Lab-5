@@ -30,26 +30,37 @@ public class AminoQuizFrame extends javax.swing.JFrame {
      */
     
     private final static ArrayList<String> SHORT_NAMES = new ArrayList<>( Arrays.asList( new String[] {
-        "A","R", "N", "D", "C", "Q", "E", 
-        "G",  "H", "I", "L", "K", "M", "F", 
-        "P", "S", "T", "W", "Y", "V"
+        //Labels in comments for easy cheating
+        "A", "R", //1
+        "N", "D", //2
+        "C", "Q", //3
+        "E", "G", //4
+        "H", "I", //5
+        "L", "K", //6
+        "M", "F", //7
+        "P", "S", //8
+        "T", "W", //9
+        "Y", "V"  //10
     }));
     
     private final static ArrayList<String> FULL_NAMES = new ArrayList<>( Arrays.asList( new String[] {
-        "alanine","arginine", "asparagine", 
-        "aspartic acid", "cysteine",
-        "glutamine",  "glutamic acid",
-        "glycine" ,"histidine","isoleucine",
-        "leucine",  "lysine", "methionine", 
-        "phenylalanine", "proline", 
-        "serine","threonine","tryptophan", 
-        "tyrosine", "valine"
+        //Labels in comments for easy cheating
+        "alanine", "arginine",              //1
+        "asparagine", "aspartic acid",      //2
+        "cysteine", "glutamine",            //3
+        "glutamic acid",  "glycine" ,       //4
+        "histidine","isoleucine",           //5
+        "leucine",  "lysine",               //6
+        "methionine", "phenylalanine",      //7
+        "proline", "serine",                //8
+        "threonine","tryptophan",           //9
+        "tyrosine", "valine"                //10
     }));
     
     private boolean started = false;
     private boolean ended = false;
     
-    private final int QUIZ_TIME = 30000; //In milliseconds -> 30 seconds
+    private int quizTime = 30000; //In milliseconds -> 30 seconds
     private ArrayList<Integer> usedQuestions = new ArrayList<>();
     private final int NO_REPEAT_BUFFER = 7;
     private int currentCorrectIndex = -1;
@@ -86,6 +97,8 @@ public class AminoQuizFrame extends javax.swing.JFrame {
         aminoDisplay = new javax.swing.JFormattedTextField();
         answerField = new javax.swing.JTextField();
         endButton = new javax.swing.JButton();
+        timeDisplay = new javax.swing.JFormattedTextField();
+        jLabel3 = new javax.swing.JLabel();
 
         jTextArea2.setColumns(20);
         jTextArea2.setRows(5);
@@ -141,22 +154,29 @@ public class AminoQuizFrame extends javax.swing.JFrame {
             }
         });
 
+        timeDisplay.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
+        timeDisplay.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        timeDisplay.setText("30");
+
+        jLabel3.setText("Seconds:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(promptDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 265, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(95, 95, 95)
-                        .addComponent(aminoDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(answerField)))
-                .addGap(18, 18, 18)
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(answerField, javax.swing.GroupLayout.PREFERRED_SIZE, 265, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(layout.createSequentialGroup()
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(timeDisplay))
+                            .addGap(65, 65, 65)
+                            .addComponent(aminoDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(promptDisplay)))
+                .addGap(18, 18, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -184,10 +204,16 @@ public class AminoQuizFrame extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(incorrectDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, 67, Short.MAX_VALUE)
                             .addComponent(correctDisplay)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(promptDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(aminoDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(aminoDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(timeDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -199,26 +225,46 @@ public class AminoQuizFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    Timer timer = new Timer(QUIZ_TIME, new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent arg0) {
-            if (!ended) {
-                ended = true;
-                endQuiz();
-            }
-        }
-    });
+    
+    Timer timer;
+    Timer countdownTimer;
 
     private void submitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitButtonActionPerformed
         if (!started) {
             started = true;
+            
+            submitButton.setText("Submit");
             promptDisplay.setEnabled(true);
             aminoDisplay.setEnabled(true);
             endButton.setEnabled(true);
             answerField.setText("");
-            timer.setRepeats(false); // Only execute once
-            timer.start(); // Go go go!
+            
+            timeDisplay.setEditable(false);
+            quizTime = 1000 * Integer.parseInt(timeDisplay.getText());
+            timeDisplay.setEnabled(false);
+            countdownTimer = new Timer(1000, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent arg0) {
+                    Integer time = Integer.parseInt(timeDisplay.getText());
+                    if (time > 0) {
+                        time--;
+                        timeDisplay.setText(time + "");
+                    }
+                }
+            });
+            timer = new Timer(quizTime, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent arg0) {
+                    if (!ended) {
+                        ended = true;
+                        endQuiz();
+                    }
+                }
+            });
+            countdownTimer.setRepeats(true);
+            timer.setRepeats(false);
+            countdownTimer.start();
+            timer.start();
         } else {
             String answer = answerField.getText().trim().toLowerCase();
             if (FULL_NAMES.get(currentCorrectIndex).equals(answer)) {
@@ -266,6 +312,8 @@ public class AminoQuizFrame extends javax.swing.JFrame {
         correctDisplay.setEnabled(false);
         incorrectDisplay.setEnabled(false);
         aminoDisplay.setEnabled(false);
+        countdownTimer.stop();
+        timeDisplay.setText("0");
     }
     
     
@@ -314,10 +362,12 @@ public class AminoQuizFrame extends javax.swing.JFrame {
     private javax.swing.JFormattedTextField incorrectDisplay;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextArea jTextArea2;
     private javax.swing.JLabel promptDisplay;
     private javax.swing.JButton submitButton;
+    private javax.swing.JFormattedTextField timeDisplay;
     // End of variables declaration//GEN-END:variables
 
 }
