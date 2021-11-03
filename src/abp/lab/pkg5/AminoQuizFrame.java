@@ -247,6 +247,7 @@ public class AminoQuizFrame extends javax.swing.JFrame {
         } while(usedQuestions.contains(possibleIndex));
         currentCorrectIndex = possibleIndex;
         aminoDisplay.setText(SHORT_NAMES.get(currentCorrectIndex));
+        usedQuestions.add(currentCorrectIndex);
         if (usedQuestions.size() > NO_REPEAT_BUFFER) {
             usedQuestions.remove(0);
         }
