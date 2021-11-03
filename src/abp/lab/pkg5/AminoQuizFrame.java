@@ -19,16 +19,6 @@ import javax.swing.Timer;
  */
 public class AminoQuizFrame extends javax.swing.JFrame {
     
-    /**
-     * NOTE
-     * I haven't really done anything to make this thread safe, but I've not encountered any issues in using it!
-     * In the interest of not cluttering the program, I've decided for now to simply leave it be.
-     * If you spot any glaring issues in thread safety, let me know!
-     * The worst I can see is the check-then-act on the quiz ending segments,
-     * but at worst that will cause endQuiz to run twice, which doesn't really
-     * matter since it just modifies the display in a static way.
-     */
-    
     private final static ArrayList<String> SHORT_NAMES = new ArrayList<>( Arrays.asList( new String[] {
         //Labels in comments for easy cheating
         "A", "R", //1
@@ -58,7 +48,7 @@ public class AminoQuizFrame extends javax.swing.JFrame {
     }));
     
     private boolean started = false;
-    private boolean ended = false;
+    private Boolean ended = false;
     
     private int quizTime = 30000; //In milliseconds -> 30 seconds
     private ArrayList<Integer> usedQuestions = new ArrayList<>();
@@ -72,7 +62,6 @@ public class AminoQuizFrame extends javax.swing.JFrame {
      * Creates new form AminoQuizFrame
      */
     public AminoQuizFrame() {
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         initComponents();
         getRootPane().setDefaultButton(submitButton);
     }
@@ -105,8 +94,9 @@ public class AminoQuizFrame extends javax.swing.JFrame {
         jScrollPane2.setViewportView(jTextArea2);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
-        submitButton.setFont(submitButton.getFont().deriveFont(submitButton.getFont().getStyle() | java.awt.Font.BOLD, submitButton.getFont().getSize()+4));
+        submitButton.setFont(submitButton.getFont().deriveFont(submitButton.getFont().getStyle() | java.awt.Font.BOLD, submitButton.getFont().getSize()+3));
         submitButton.setText("Start");
         submitButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -145,7 +135,7 @@ public class AminoQuizFrame extends javax.swing.JFrame {
         answerField.setText("Hit 'Start' or Enter when ready!");
         answerField.setMargin(new java.awt.Insets(2, 6, 2, 2));
 
-        endButton.setFont(endButton.getFont().deriveFont(endButton.getFont().getStyle() | java.awt.Font.BOLD, endButton.getFont().getSize()+4));
+        endButton.setFont(endButton.getFont().deriveFont(endButton.getFont().getStyle() | java.awt.Font.BOLD, endButton.getFont().getSize()+3));
         endButton.setText("End");
         endButton.setEnabled(false);
         endButton.addActionListener(new java.awt.event.ActionListener() {
@@ -210,7 +200,7 @@ public class AminoQuizFrame extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(aminoDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
                                 .addComponent(jLabel3)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(timeDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
@@ -240,7 +230,13 @@ public class AminoQuizFrame extends javax.swing.JFrame {
             answerField.setText("");
             
             timeDisplay.setEditable(false);
-            quizTime = 1000 * Integer.parseInt(timeDisplay.getText());
+            try {
+                quizTime = 1000 * Integer.parseInt(timeDisplay.getText());
+            } catch (NumberFormatException e) {
+                //If someone enters something invalid
+                quizTime = 30000;
+                timeDisplay.setText("30");
+            }
             timeDisplay.setEnabled(false);
             countdownTimer = new Timer(1000, new ActionListener() {
                 @Override
@@ -255,9 +251,11 @@ public class AminoQuizFrame extends javax.swing.JFrame {
             timer = new Timer(quizTime, new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent arg0) {
-                    if (!ended) {
-                        ended = true;
-                        endQuiz();
+                    synchronized(ended) {
+                        if (!ended) {
+                            ended = true;
+                            endQuiz();
+                        }
                     }
                 }
             });
@@ -279,9 +277,11 @@ public class AminoQuizFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_submitButtonActionPerformed
 
     private void endButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_endButtonActionPerformed
-        if (!ended) {
-            ended = true;
-            endQuiz();
+        synchronized(ended) {
+            if (!ended) {
+                ended = true;
+                endQuiz();
+            }
         }
     }//GEN-LAST:event_endButtonActionPerformed
 
