@@ -281,6 +281,8 @@ public class AminoQuizFrame extends javax.swing.JFrame {
             if (!ended) {
                 ended = true;
                 endQuiz();
+            } else {
+                resetQuiz();
             }
         }
     }//GEN-LAST:event_endButtonActionPerformed
@@ -308,12 +310,30 @@ public class AminoQuizFrame extends javax.swing.JFrame {
         answerField.setText("Quiz over!");
         answerField.setEnabled(false);
         submitButton.setEnabled(false);
-        endButton.setEnabled(false);
+        endButton.setText("Reset");
         correctDisplay.setEnabled(false);
         incorrectDisplay.setEnabled(false);
+        correctDisplay.setText("0");
+        incorrectDisplay.setText("0");
         aminoDisplay.setEnabled(false);
         countdownTimer.stop();
         timeDisplay.setText("0");
+    }
+    
+    private void resetQuiz() {
+        answerField.setText("Hit 'Start' or 'Enter' when ready!");
+        answerField.setEnabled(true);
+        submitButton.setEnabled(true);
+        endButton.setText("End");
+        endButton.setEnabled(false);
+        submitButton.setText("Start");
+        correctDisplay.setEnabled(true);
+        incorrectDisplay.setEnabled(true);
+        timeDisplay.setText("30");
+        timeDisplay.setEnabled(true);
+        aminoDisplay.setText("-");
+        started = false;
+        ended = false;
     }
     
     
